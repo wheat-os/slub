@@ -3,6 +3,7 @@ package generate
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
 	"strings"
 	"text/template"
@@ -37,6 +38,7 @@ func MakeDirProjectDir(proPath, name string) error {
 		return err
 	}
 
+	// os.Chmod(dir, 0777)
 	if err := os.Mkdir(spiderDir, 0777); err != nil {
 		return err
 	}
@@ -167,5 +169,11 @@ func MakeDefaultSettings() error {
 		}
 	}
 
-	return nil
+	// go mod init
+
+	dos := exec.Command("go", "mod", "init", projectMod)
+	dos.Dir = projectPath
+
+	fmt.Println(dos.String())
+	return dos.Run()
 }
