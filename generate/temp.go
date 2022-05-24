@@ -57,7 +57,7 @@ func New{{.nameCap}}Spider() spider.Spider {
 }
 `
 
-var settingTemp = `package temp
+var settingTemp = `package {{.pkgName}}
 
 import (
 	"github.com/wheat-os/slubby/download"

@@ -174,6 +174,5 @@ func MakeDefaultSettings() error {
 	dos := exec.Command("go", "mod", "init", projectMod)
 	dos.Dir = projectPath
 
-	fmt.Println(dos.String())
 	return dos.Run()
 }

@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"regexp"
@@ -61,10 +62,21 @@ scaffold with slubby default configuration items.`,
 		err = generate.MakeDirProjectDir(proPath, projectName)
 		cobra.CheckErr(err)
 
-		generate.SetProjectPath(path.Join(proPath, projectName))
+		generate.SetProjectPath(strings.ToLower(path.Join(proPath, projectName)))
 
 		err = generate.MakeDefaultSettings()
 		cobra.CheckErr(err)
+
+		// prompt
+		fmt.Printf(`Thanks to slub, 
+your project has been created successfully, 
+and you can use the following command to quickly start a spider.
+---------------------------------------------------------------
+cd %s
+slub genspider <spider name> <spider fqdn>
+go mod tidy
+---------------------------------------------------------------
+`, strings.ToLower(path.Join(proPath, projectName)))
 
 	},
 
