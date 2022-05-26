@@ -1,5 +1,12 @@
 package generate
 
+import (
+	"fmt"
+	"io"
+	"os"
+	"regexp"
+)
+
 var (
 	projectPath string
 	projectMod  string
@@ -13,6 +20,27 @@ func SetProjectMod(p string) {
 	projectMod = p
 }
 
+func SetProjectModByFile(modPath string) error {
+	f, err := os.Open(modPath)
+	if err != nil {
+		return err
+	}
+
+	content, err := io.ReadAll(f)
+	if err != nil {
+		return err
+	}
+
+	mods := regexp.MustCompile(`module (.+)`).FindAllStringSubmatch(string(content), -1)
+
+	if len(mods) == 0 {
+		return fmt.Errorf("this is not a valid go mod file, path: %s", modPath)
+	}
+
+	SetProjectMod(mods[0][1])
+	return nil
+}
+
 var spiderTemp = `package spiders
 
 import (
@@ -23,37 +51,37 @@ import (
 	"github.com/wheat-os/slubby/stream"
 )
 
-type {{.nameCap}}Spider struct{}
+type {{.name}}Spider struct{}
 
-func (t *{{.nameCap}}Spider) UId() string {
+func (t *{{.name}}Spider) UId() string {
 	return "{{.uid}}"
 }
 
-func (t *{{.nameCap}}Spider) FQDN() string {
+func (t *{{.name}}Spider) FQDN() string {
 	return "{{.fqdn}}"
 }
 
-func (t *{{.nameCap}}Spider) Parse(response *stream.HttpResponse) (stream.Stream, error) {
+func (t *{{.name}}Spider) Parse(response *stream.HttpResponse) (stream.Stream, error) {
 	fmt.Println(response.Text())
 
 	return nil, nil
 }
 
-func (t *{{.nameCap}}Spider) StartRequest() stream.Stream {
+func (t *{{.name}}Spider) StartRequest() stream.Stream {
 	req, _ := stream.Request(t, "http://www.baidu.com", nil)
 	return req
 }
 
 var (
-	once = sync.Once{}
-	{{.nameCap}} *{{.nameCap}}Spider
+	{{.name}}Once = sync.Once{}
+	{{.name}} *{{.name}}Spider
 )
 
-func New{{.nameCap}}Spider() spider.Spider {
-	once.Do(func() {
-		{{.nameCap}} = &{{.nameCap}}Spider{}
+func {{.nameCap}}Spider() spider.Spider {
+	{{.name}}Once.Do(func() {
+		{{.name}} = &{{.name}}Spider{}
 	})
-	return {{.nameCap}}
+	return {{.name}}
 }
 `
 
@@ -68,13 +96,17 @@ import (
 	"github.com/wheat-os/slubby/scheduler"
 	"github.com/wheat-os/slubby/scheduler/buffer"
 	"github.com/wheat-os/slubby/scheduler/filter"
-	"github.com/wheat-os/wlog"
+	log "github.com/wheat-os/wlog"
 )
 
 // ***************************************** Logger *****************************************
 func init() {
-	wlog.SetStdOptions(wlog.WithDisPlayLevel(wlog.InfoLevel))
-	wlog.SetStdOptions(wlog.WithDisableCaller(true))
+	log.SetStdOptions(log.WithDisPlayLevel(log.InfoLevel))
+	log.SetStdOptions(log.WithDisableCaller(true))
+	log.SetStdOptions(log.WithOutput(os.Stdout))
+
+	// set the log level
+	log.SetStdOptions(log.WithDisPlayLevel(log.DebugLevel))
 }
 
 // **************************************** Scheduler ***************************************
@@ -224,5 +256,20 @@ func main() {
 	engine.Start(ctx)
 
 	engine.Close()
+}
+`
+
+var registerTemp = `package main
+
+import (
+	"{{.projectMod}}/{{.projectName}}"
+
+	"{{.projectMod}}/spiders"
+)
+
+func init() {
+	{{- range $index, $value := .spiders}}
+		{{$.projectName}}.DefaultEngine.Register(spiders.{{$value}}())
+	{{- end}}
 }
 `

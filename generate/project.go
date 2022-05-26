@@ -18,6 +18,16 @@ func generateTemplate(savePath string, data interface{}, temp string, name strin
 	if err != nil {
 		return err
 	}
+	defer func() {
+		if err != nil {
+			return
+		}
+
+		// fmt code
+		cmd := exec.Command("go", "fmt", savePath)
+		cmd.Run()
+	}()
+
 	defer f.Close()
 
 	t, err := template.New(name).Parse(temp)
@@ -58,6 +68,7 @@ func MakeSpider(name string, fqdn string, uid string) error {
 		"nameCap": nameCap,
 		"uid":     uid,
 		"fqdn":    fqdn,
+		"name":    strings.ToLower(name),
 	}
 
 	// open name
