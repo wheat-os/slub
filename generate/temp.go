@@ -88,6 +88,8 @@ func {{.nameCap}}Spider() spider.Spider {
 var settingTemp = `package {{.pkgName}}
 
 import (
+	"os"
+
 	"github.com/wheat-os/slubby/download"
 	"github.com/wheat-os/slubby/download/middle"
 	"github.com/wheat-os/slubby/engine"
