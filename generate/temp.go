@@ -74,14 +74,14 @@ func (t *{{.name}}Spider) StartRequest() stream.Stream {
 
 var (
 	{{.name}}Once = sync.Once{}
-	{{.name}} *{{.name}}Spider
+	{{.name}}P *{{.name}}Spider
 )
 
 func {{.nameCap}}Spider() spider.Spider {
 	{{.name}}Once.Do(func() {
-		{{.name}} = &{{.name}}Spider{}
+		{{.name}}P = &{{.name}}Spider{}
 	})
-	return {{.name}}
+	return {{.name}}P
 }
 `
 
