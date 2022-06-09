@@ -147,7 +147,12 @@ func makeMiddleware() error {
 }
 
 func makeConfig() error {
-	return generateTemplate(path.Join(projectPath, "conf.toml"), nil, confTem, "conf")
+
+	data := map[string]string{
+		"version": version,
+	}
+
+	return generateTemplate(path.Join(projectPath, "conf.toml"), data, confTem, "conf")
 }
 
 func makeMain() error {

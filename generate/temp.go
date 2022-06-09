@@ -7,6 +7,10 @@ import (
 	"regexp"
 )
 
+const (
+	version = "v1.0.1-alpha"
+)
+
 var (
 	projectPath string
 	projectMod  string
@@ -215,7 +219,7 @@ func (s *{{.nameCap}}Middle) ProcessErr(m *middle.M, req *stream.HttpRequest, er
 `
 
 var confTem = `[slub]
-version = "1.0.0"
+version = "{{.version}}"
 
 [slubby]
 version = "1.0.0"
