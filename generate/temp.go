@@ -130,7 +130,14 @@ var schedulerModule = scheduler.ShortScheduler(
 
 // **************************************** Download ***************************************
 // download middle
+
+// http headers
+var defaultHttpRequestHeaders = map[string]string{
+	"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+}
+
 var downloadMiddlewareModule = middle.MiddleGroup(
+	middle.HeadMiddle(defaultHttpRequestHeaders),
 	middle.LogMiddle(),
 )
 
@@ -142,6 +149,9 @@ var downloadMiddlewareModule = middle.MiddleGroup(
 var downloadModule = download.ShortDownload(
 	// download.WithLimiter(downloadLimiterModule),
 	download.WithDownloadMiddle(downloadMiddlewareModule),
+
+	// the number of downloader retries
+	download.WithDownloadRetry(2),
 )
 
 // *************************************** Outputter **************************************
