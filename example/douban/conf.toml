@@ -1,0 +1,5 @@
+[slub]
+version = "v1.0.1-alpha"
+
+[slubby]
+version = "1.0.0"
