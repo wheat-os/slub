@@ -7,10 +7,6 @@ import (
 	"regexp"
 )
 
-const (
-	version = "v1.0.1-alpha"
-)
-
 var (
 	projectPath string
 	projectMod  string
@@ -232,7 +228,7 @@ var confTem = `[slub]
 version = "{{.version}}"
 
 [slubby]
-version = "1.0.0"
+version = "{{.slubbyVersion}}"
 `
 
 var mainTemp = `package main

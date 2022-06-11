@@ -148,8 +148,15 @@ func makeMiddleware() error {
 
 func makeConfig() error {
 
+	slubbyVersion := "acquisition failed"
+
+	if tags, err := GetSlubbyVersion(); err == nil && len(tags) > 0 {
+		slubbyVersion = tags[0].Name
+	}
+
 	data := map[string]string{
-		"version": version,
+		"version":       Version,
+		"slubbyVersion": slubbyVersion,
 	}
 
 	return generateTemplate(path.Join(projectPath, "conf.toml"), data, confTem, "conf")
